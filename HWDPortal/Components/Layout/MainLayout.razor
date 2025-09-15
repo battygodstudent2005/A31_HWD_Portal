@@ -1,0 +1,93 @@
+﻿@using HWDPortal.Components.Account
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserInfoService UserInfo 
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        @* [修改] 使用 d-flex 與 justify-content-between 讓標題與使用者資訊分佔左右兩側 *@
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+            @* [新增] 用於顯示頁面標題的區塊 *@
+            <div>
+                <h5 class="mb-0">@_currentPageTitle</h5>
+            </div>
+
+            @* 使用 AuthorizeView 來取得並顯示已驗證的使用者資訊 *@
+            <AuthorizeView>
+                <Authorized>
+                    @* 使用者資訊與登出的下拉式選單 *@
+                    <div class="dropdown">
+                        @* 調整文字顏色為深灰色，並確保圖示與文字對齊 *@
+                        <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.2rem; color: #343a40;"></i> @* 深灰色圖示 *@
+                            <strong style="color: #343a40;">@context.User.Identity?.Name?.Split('\\').Last()</strong> @* 深灰色文字 *@
+                        </a>
+                        <ul class="dropdown-menu text-small shadow">
+                            <li>
+                                <a class="dropdown-item" href="Account/Logout">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    <span>登出</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    @* // 當使用者未通過驗證時，顯示此訊息 *@
+                    <span class="user-info">使用者: 未驗證</span>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <article class="content px-4">
+            @* [新增] 將 MainLayout 元件本身的實例(this)透過串聯參數傳遞給子元件 *@
+            <CascadingValue Value="this">
+                @Body
+            </CascadingValue>
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1080">
+</div>
+
+@code {
+    private string? _currentPageTitle; // [新增] 用於儲存目前頁面標題的私有欄位
+
+    // [新增] 建立一個公開方法，讓子元件(頁面)可以呼叫以設定標題
+    public void SetPageTitle(string title)
+    {
+        _currentPageTitle = title;
+        StateHasChanged(); // 通知 Blazor 狀態已變更，需要重新渲染 UI
+    }
+
+    // 覆寫 OnInitializedAsync 生命周期方法
+    protected override async Task OnInitializedAsync()
+    {
+        // ... (原有的程式碼不變)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            var userNameWithDomain = user.Identity.Name;
+            if (!string.IsNullOrEmpty(userNameWithDomain))
+            {
+                var userName = userNameWithDomain.Split('\\').Last();
+                Console.WriteLine($"[Debug] MainLayout is using UserInfoService with InstanceId: {UserInfo.InstanceId}");
+                await UserInfo.InitializeAsync(userName);
+                StateHasChanged();
+            }
+        }
+    }
+}

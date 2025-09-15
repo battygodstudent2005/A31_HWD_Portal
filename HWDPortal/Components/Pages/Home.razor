@@ -1,0 +1,16 @@
+﻿@page "/"
+<PageTitle>首頁</PageTitle>
+
+<h3>歡迎使用 HWD Portal!</h3>
+
+<p>請從左側導覽列選擇您要使用的功能。</p>
+
+@code {
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Layout?.SetPageTitle("首頁 (Home)");
+    }
+}

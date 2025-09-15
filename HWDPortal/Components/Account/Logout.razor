@@ -1,0 +1,30 @@
+﻿@page "/Account/Logout"
+@layout LoginLayout
+@inject IJSRuntime JSRuntime // [新增] 注入 IJSRuntime 以便呼叫 JavaScript
+
+<div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+    <div class="card text-center shadow-sm" style="max-width: 500px;">
+        <div class="card-header">
+            登出成功
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">您已成功登出系統</h5>
+            <p class="card-text">
+                由於系統使用 Windows 驗證，您必須<strong>關閉此瀏覽器分頁或視窗</strong>才能完全結束您的登入階段。
+            </p>
+            <button class="btn btn-danger" @onclick="CloseWindow">
+                <i class="bi bi-x-circle-fill me-2"></i>關閉此分頁
+            </button>
+        </div>
+        <div class="card-footer text-muted">
+            如果按鈕無效，請手動關閉此分頁。
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task CloseWindow()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "window.close()");
+    }
+}

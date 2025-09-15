@@ -1,0 +1,37 @@
+﻿@* // [新增] 這是一個沒有 UI 的邏輯元件，專門用來載入使用者資訊 *@
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserInfoService UserInfo
+
+@code {
+    /// <summary>
+    /// 當元件初始化時，執行此生命週期方法
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // 取得目前的驗證狀態
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // 確保使用者已通過驗證且服務尚未初始化
+        if (user.Identity != null && user.Identity.IsAuthenticated && !UserInfo.IsInitialized)
+        {
+            // 從驗證身分中取得使用者名稱 (通常是 DOMAIN\username)
+            var userNameWithDomain = user.Identity.Name;
+
+            if (!string.IsNullOrEmpty(userNameWithDomain))
+            {
+                // 根據您的 UserInfoService 邏輯，可能需要移除網域名稱
+                // 例如將 "CORP\MyUser" 轉為 "MyUser"
+                var userNameParts = userNameWithDomain.Split('\\');
+                var userName = userNameParts.Length > 1 ? userNameParts[1] : userNameParts[0];
+
+                // 使用整理後的使用者名稱來初始化您的服務，觸發資料庫查詢
+                await UserInfo.InitializeAsync(userName);
+
+                // (選用) 通知 UI 更新，如果您的其他元件需要即時反應
+                StateHasChanged();
+            }
+        }
+    }
+}

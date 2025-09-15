@@ -1,0 +1,35 @@
+# Microsoft Visual Studio 專案的忽略規則
+
+## 使用者特定的檔案
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## 建置輸出
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio Code
+.vscode/
+
+## JetBrains Rider
+.idea/
+
+## 專案暫存檔
+*.vs/
+*.nupkg
+*.nuget.props
+*.nuget.targets
+
+## 測試結果
+*.trx
+TestResults/
+/_ReSharper*
+
+# [新增] 針對您的需求，忽略特定的 JSON 檔案
+# 忽略開發環境的設定檔，通常包含敏感資訊
+appsettings.Development.json
+
+# [新增] 忽略 Visual Studio 的本機啟動設定檔
+Properties/launchSettings.json

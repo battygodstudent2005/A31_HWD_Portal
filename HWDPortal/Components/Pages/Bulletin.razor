@@ -1,0 +1,142 @@
+﻿@page "/Bulletin"
+@rendermode InteractiveServer
+@using System.IO
+@* 引用我們建立的服務和資料模型 *@
+@using HWDPortal.Services
+@inject BulletinService BulletinSvc // 注入 BulletinService
+@inject ILogger<Bulletin> Logger
+
+<PageTitle>公告欄</PageTitle>
+
+@* 搜尋與資訊區塊，參考 Dashboard.razor 的設計 *@
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="請輸入公告標題關鍵字..." @bind-value="searchTerm" @oninput="FilterData" />
+                    @if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" type="button" @onclick="ClearSearch">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-end align-items-center">
+                    <small class="text-muted">
+                        顯示 @(filteredBulletins?.Count ?? 0) / @(bulletins?.Count ?? 0) 則公告
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (isLoading)
+{
+    <p><em>載入公告中...</em></p>
+}
+else if (bulletins == null || !bulletins.Any())
+{
+    <p><em>目前沒有任何公告。</em></p>
+}
+@* 當有公告但搜尋無結果時顯示的訊息 *@
+else if (filteredBulletins == null || !filteredBulletins.Any())
+{
+    <div class="text-center p-4">
+        <i class="bi bi-search-heart text-muted" style="font-size: 3rem;"></i>
+        <p class="mt-2 text-muted">找不到符合「@searchTerm」的公告。</p>
+    </div>
+}
+else
+{
+    @* 將表格放入卡片中，並使用 table-responsive，樣式與 Dashboard 更統一 *@
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th style="min-width: 540px; width: 70%;">公告標題</th>
+                        <th style="width: 30%;">發佈日期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* 迭代的對象從 bulletins 改為 filteredBulletins *@
+                    @foreach (var item in filteredBulletins)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@($"/download/bulletin?fileName={Uri.EscapeDataString(item.Title)}")" target="_blank">
+                                    @item.Title
+                                </a>
+                            </td>
+                            <td>@item.LastWriteTime.ToString("yyyy/MM/dd HH:mm:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter] // 宣告一個屬性來接收從上層 MainLayout 傳來的串聯參數
+    public MainLayout? Layout { get; set; }
+
+    private List<BulletinItem>? bulletins;
+    private List<BulletinItem>? filteredBulletins;
+    private bool isLoading = true;
+    private string searchTerm = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 在頁面初始化時，透過 Layout 物件呼叫其公開方法來設定標題
+        Layout?.SetPageTitle("公告欄 (Bulletin)");
+
+        try
+        {
+            isLoading = true;
+            bulletins = await BulletinSvc.GetBulletinsAsync();
+            filteredBulletins = bulletins;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "獲取公告時發生錯誤。");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // 篩選資料的方法，當使用者在輸入框中輸入時觸發
+    private void FilterData(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? "";
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            // 如果搜尋詞為空，則顯示所有公告
+            filteredBulletins = bulletins;
+        }
+        else
+        {
+            // 如果搜尋詞不為空，則從原始公告列表 (bulletins) 中篩選出標題包含關鍵字的項目
+            // 使用 StringComparison.OrdinalIgnoreCase 來忽略大小寫
+            filteredBulletins = bulletins?.Where(b => b.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    // 清除搜尋條件的方法
+    private void ClearSearch()
+    {
+        searchTerm = ""; // 清空搜尋詞
+        filteredBulletins = bulletins; // 重設篩選列表，顯示所有公告
+    }
+}

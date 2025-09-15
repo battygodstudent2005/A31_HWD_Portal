@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HWDPortal", "HWDPortal\HWDPortal.csproj", "{B6E7EBD9-73AA-4BE9-AE89-FEEC43E08BBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HWDPortal.Client", "HWDPortal.Client\HWDPortal.Client.csproj", "{7E3DD04A-6075-4E37-BFA7-6C6ECD7056AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6E7EBD9-73AA-4BE9-AE89-FEEC43E08BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6E7EBD9-73AA-4BE9-AE89-FEEC43E08BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6E7EBD9-73AA-4BE9-AE89-FEEC43E08BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6E7EBD9-73AA-4BE9-AE89-FEEC43E08BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E3DD04A-6075-4E37-BFA7-6C6ECD7056AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E3DD04A-6075-4E37-BFA7-6C6ECD7056AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E3DD04A-6075-4E37-BFA7-6C6ECD7056AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E3DD04A-6075-4E37-BFA7-6C6ECD7056AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD4A6DF0-9CF4-4998-8CD3-7689AD21A6E5}
+	EndGlobalSection
+EndGlobal

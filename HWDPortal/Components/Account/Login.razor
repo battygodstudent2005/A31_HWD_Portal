@@ -1,0 +1,61 @@
+﻿@page "/login"
+@layout LoginLayout
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="login-container">
+    <div class="login-card">
+        <h3 class="title">A31 HWD Division</h3>
+        <p class="subtitle">R&D Portal System</p>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-group">
+                <span class="input-group-icon"><i class="bi bi-person"></i></span>
+                <input id="username" class="form-control" placeholder="請輸入:公司AD帳號 (範例:Chain_Liu)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Your Password</label>
+            <div class="input-group">
+                <span class="input-group-icon"><i class="bi bi-lock"></i></span>
+                <input type="@passwordInputType" id="password" class="form-control" placeholder="請輸入:工作機開機密碼" />
+                <button class="btn btn-outline-secondary" type="button" @onclick="TogglePasswordVisibility">@passwordButtonText</button>
+            </div>
+        </div>
+
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="rememberMe" checked>
+            <label class="form-check-label" for="rememberMe">Remember me</label>
+        </div>
+
+        <button class="btn btn-signin w-100" @onclick="SignIn">
+            <i class="bi bi-box-arrow-in-right"></i> Sign IN
+        </button>
+    </div>
+</div>
+
+@code {
+    // [新增] 用於儲存密碼輸入框的類型 ("password" 或 "text")
+    private string passwordInputType = "password";
+    // [新增] 用於儲存按鈕上顯示的文字
+    private string passwordButtonText = "顯示";
+    // [新增] 追蹤密碼是否可見的布林值
+    private bool isPasswordVisible = false;
+
+    // [新增] 切換密碼可見性的方法
+    private void TogglePasswordVisibility()
+    {
+        // [新增] 切換布林狀態
+        isPasswordVisible = !isPasswordVisible;
+        // [新增] 根據 isPasswordVisible 的值，更新輸入框類型和按鈕文字
+        passwordInputType = isPasswordVisible ? "text" : "password";
+        passwordButtonText = isPasswordVisible ? "隱藏" : "顯示";
+    }
+
+    private void SignIn()
+    {
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
